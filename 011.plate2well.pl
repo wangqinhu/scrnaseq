@@ -15,7 +15,7 @@ use Data::Dumper;
 
 my $plate_conf = $ARGV[0] || "data/conf/sc-rnaseq.plate.conf";
 my $fastq_conf = $ARGV[1] || "data/conf/sc-rnaseq.fastq.conf";
-my $clean_dir = $ARGV[2] || "data/cell";
+my $clean_dir = $ARGV[2] || "data/plate2well";
 
 # experiment design
 # position is 0-indexed
@@ -84,6 +84,8 @@ sub load_plate_conf {
 		next if (/^\s*$/);
 		my @w = split /\t/;
 		my ($cell, $sam, $run, $pool_barcode, $cell_barcode) = ($w[0], $w[3], $w[4], $w[6], $w[7]);
+		$pool_barcode =~ s/\s//g;
+		$cell_barcode =~ s/\s//g;
 		$pool_barcode = uc($pool_barcode);
 		$cell_barcode = uc($cell_barcode);
 		$well{$run}{$pool_barcode}{$cell_barcode}{"sam"} = $sam;
