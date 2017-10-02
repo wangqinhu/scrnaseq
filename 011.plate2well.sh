@@ -5,4 +5,4 @@
 #$ -j y
 #$ -q great.q
 
-perl 011.raw2clean.pl
+perl 011.plate2well.pl

@@ -15,10 +15,10 @@ use Data::Dumper;
 
 my $plate_conf = $ARGV[0] || "data/conf/sc-rnaseq.plate.conf";
 my $fastq_conf = $ARGV[1] || "data/conf/sc-rnaseq.fastq.conf";
-my $clean_dir = $ARGV[2] || "data/clean";
+my $clean_dir = $ARGV[2] || "data/cell";
 
 # experiment design
-# position are 0-indexed
+# position is 0-indexed
 my $pool_barcode_start = 3;
 my $pool_barcode_len = 4;
 my $cell_barcode_start = 0;
@@ -28,9 +28,9 @@ my $rmt_len = 8;
 my $clean_start = 7;
 my $clean_len = 68;
 
-sc_raw2clean();
+sc_plate2well();
 
-sub sc_raw2clean {
+sub sc_plate2well {
 	my $well = load_plate_conf($plate_conf);
 	my $seqs = load_fastq_conf($fastq_conf);
 	foreach my $run (sort keys %{$seqs}) {
@@ -83,10 +83,13 @@ sub load_plate_conf {
 		next if (/^\#/);
 		next if (/^\s*$/);
 		my @w = split /\t/;
-		my ($well, $sam, $run, $pool_barcode, $cell_barcode) = ($w[0], $w[3], $w[4], $w[6], $w[7]);
+		my ($cell, $sam, $run, $pool_barcode, $cell_barcode) = ($w[0], $w[3], $w[4], $w[6], $w[7]);
+		$pool_barcode = uc($pool_barcode);
+		$cell_barcode = uc($cell_barcode);
 		$well{$run}{$pool_barcode}{$cell_barcode}{"sam"} = $sam;
-		$well{$run}{$pool_barcode}{$cell_barcode}{"cell"} = $well;
+		$well{$run}{$pool_barcode}{$cell_barcode}{"cell"} = $cell;
 	}
+	close PC;
 	return \%well;
 }
 
@@ -109,5 +112,6 @@ sub load_fastq_conf {
 			die "Unknown fastq file: $file in fastq_conf file $fastq_conf\n";
 		}
 	}
+	close FC;
 	return \%seqs;
 }
