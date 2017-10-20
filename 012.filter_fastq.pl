@@ -58,7 +58,7 @@ sub filter_fastq {
 	}
 	close FQI;
 
-	print "$cell\t$tiss\t$read_count\t$clean_count\n$short_read_count\n";
+	print "$cell\t$tiss\t$read_count\t$clean_count\t$short_read_count\n";
 
 	# write fastq
 	open (FQO, ">$fastq_output") or die "Cannot open fastq: $fastq_output, $!\n";
