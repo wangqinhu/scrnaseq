@@ -31,7 +31,7 @@ sub filter_fastq {
 
 	my %fastq;
 	my ($fq_1, $fq_2, $fq_3, $fq_4, $rmt, $rmt_qual);
-	my ($read_count, $short_read_count, $clean_count);
+	my ($read_count, $short_read_count, $clean_count) = (0, 0, '0000000');
 	while ($fq_1 = <FQI>) {
 		$fq_2 = <FQI>;
 		$fq_3 = <FQI>;
@@ -39,10 +39,6 @@ sub filter_fastq {
 		chomp $fq_2;
 		chomp $fq_4;
 		$read_count++;
-		# umi/rmt
-		($rmt, $rmt_qual) = split /\s/, $fq_1;
-		$rmt =~ s/^\@//;
-		$rmt = "$tiss\_$cell\_$rmt";
 		# find poly T
 		if ($fq_2 =~ /(T{$poly_T_len})/) {
 			$fq_2 = $`;
@@ -54,6 +50,10 @@ sub filter_fastq {
 			$fq_4 = substr($fq_4, 0, length($fq_2));
 		}
 		$clean_count++;
+		# umi/rmt
+		($rmt, $rmt_qual) = split /\s/, $fq_1;
+		$rmt =~ s/^\@//;
+		$rmt = "$tiss.$clean_count\_$cell\_$rmt";
 		$fastq{$rmt}{$fq_2} = $fq_4;
 	}
 	close FQI;
