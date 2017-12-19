@@ -14,7 +14,7 @@ use warnings;
 use Data::Dumper;
 
 my $dir = $ARGV[0] || "data/count";
-my $out = $ARGV[0] || "counts.tsv";
+my $out = $ARGV[0] || "data/matrix/counts.tsv";
 
 my %count;
 my %cell;
