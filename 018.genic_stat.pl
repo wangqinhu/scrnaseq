@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #===============================================================================
 #
-# Description: construct the expression matrix for scRNAseq
+# Description: stat gene and reads for each cell
 #
 # Copyright (c) 2017 Northwest A&F University
 # Author: Qinhu Wang
@@ -14,11 +14,12 @@ use warnings;
 use Data::Dumper;
 
 my $dir = $ARGV[0] || "data/count";
-my $out = $ARGV[0] || "data/matrix/genic_unique.tsv";
+my $out = $ARGV[0] || "data/matrix/genic_stat.tsv";
 
 my %count;
 my %cell;
 my %gene;
+my %num_of_gene;
 
 opendir (DIR, $dir) or die "Cannot open $dir: $!\n";
 foreach my $tiss (readdir DIR) {
@@ -46,7 +47,7 @@ for my $cell (sort by_strnum keys %cell) {
 		}
 		$time += $count{$gene}{$cell};
 	}
-	print OUT "$time\n";
+	print OUT "$time\t$num_of_gene{$cell}\n";
 }
 close OUT;
 
@@ -59,6 +60,9 @@ sub read_count {
 		my @w = split /\t/;
 		$gene{$w[0]} = 1;
 		$count{$w[0]}{$w[1]} = $w[2];
+		if ($w[2] > 0) {
+			$num_of_gene{$w[1]}++;
+		}
 	}
 	close IN;
 }
