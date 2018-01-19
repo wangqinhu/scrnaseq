@@ -14,11 +14,13 @@ use warnings;
 use Data::Dumper;
 
 my $dir = $ARGV[0] || "data/count";
-my $out = $ARGV[0] || "data/matrix/counts.tsv";
+my $mit = $ARGV[1] || "data/mm10/mm19.MT.gene_id.txt";
+my $out = $ARGV[2] || "data/matrix/scRNA-seq.counts.tsv";
 
 my %count;
 my %cell;
 my %gene;
+my $mito = load_mt_gene($mit);
 
 opendir (DIR, $dir) or die "Cannot open $dir: $!\n";
 foreach my $tiss (readdir DIR) {
@@ -42,7 +44,11 @@ for my $cell (sort by_strnum keys %cell) {
 }
 print OUT "\n";
 foreach my $gene (sort keys %gene) {
-	print OUT $gene;
+	if (exists $mito->{$gene}) {
+		print OUT $mito->{$gene};
+	} else {
+		print OUT $gene;
+	}
 	for my $cell (sort by_strnum keys %cell) {
 		if (!exists $count{$gene}{$cell}) {
 			$count{$gene}{$cell} = 0;
@@ -72,4 +78,19 @@ sub by_strnum {
 	$b =~ /(\d+)/;
 	my $numb = $1;
 	return $numa <=> $numb;
+}
+
+sub load_mt_gene {
+	my $file = shift;
+	my %hash = ();
+	open (IN, $file) or die "Cannot open $file: $!\n";
+	while (<IN>) {
+		chomp;
+		next if /^\#/;
+		next if /^\s*$/;
+		my @w = split /\t/;
+		$hash{$w[0]} = $w[1];
+	}
+	close IN;
+	return \%hash;
 }
