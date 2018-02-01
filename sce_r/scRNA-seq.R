@@ -44,16 +44,16 @@ sce <- calculateQCMetrics(sce, feature_controls=list(ERCC=is.spike, Mt=is.mito))
 head(colnames(colData(sce)))
 
 # plot distributions of QC metrics
-pdf("scplot/QC_metrics.pdf", width = 6, height = 6)
+pdf("scplot/QC_metrics-v2.pdf", width = 6, height = 6)
 par(mfrow=c(2,2), mar=c(5.1, 4.1, 0.1, 0.1))
 hist(sce$total_counts/1e3, xlab="Library sizes (thousands)", main="", 
      breaks=20, col="grey80", ylab="Number of cells")
 hist(sce$total_features, xlab="Number of expressed genes", main="", 
      breaks=20, col="grey80", ylab="Number of cells")
 hist(sce$pct_counts_ERCC, xlab="ERCC proportion (%)", 
-     ylab="Number of cells", breaks=20, main="", col="grey80")
+     ylab="Number of cells", breaks=100, main="", col="grey80")
 hist(sce$pct_counts_Mt, xlab="Mitochondrial proportion (%)", 
-     ylab="Number of cells", breaks=20, main="", col="grey80")
+     ylab="Number of cells", breaks=100, main="", col="grey80")
 dev.off()
 
 # Removing low-quality cells based on outliers
@@ -94,6 +94,68 @@ dev.off()
 
 sce$phases <- assignments$phases
 table(sce$phases)
+
+# cell cycle of five pops
+
+# pop1: E
+sce_E <- sce[, cell_index == 1]
+assignments_E <- cyclone(sce_E, mm.pairs, gene.names=rownames(sce_E))
+pdf("scplot/cell_cycle_E.pdf", width = 5, height = 5)
+par(mar=c(4,4,1,1))
+plot(assignments_E$score$G1, assignments_E$score$G2M, 
+     xlab="G1 score", ylab="G2/M score", pch=16, cex = 0.8)
+dev.off()
+sce_E$phases <- assignments_E$phases
+table(sce_E$phases)
+#
+
+# pop2: M
+sce_M <- sce[, cell_index == 2]
+assignments_M <- cyclone(sce_M, mm.pairs, gene.names=rownames(sce_M))
+pdf("scplot/cell_cycle_M.pdf", width = 5, height = 5)
+par(mar=c(4,4,1,1))
+plot(assignments_M$score$G1, assignments_M$score$G2M, 
+     xlab="G1 score", ylab="G2/M score", pch=16, cex = 0.8)
+dev.off()
+sce_M$phases <- assignments_M$phases
+table(sce_M$phases)
+#
+
+# pop3: A
+sce_A <- sce[, cell_index == 3]
+assignments_A <- cyclone(sce_A, mm.pairs, gene.names=rownames(sce_A))
+pdf("scplot/cell_cycle_A.pdf", width = 5, height = 5)
+par(mar=c(4,4,1,1))
+plot(assignments_A$score$G1, assignments_A$score$G2M, 
+     xlab="G1 score", ylab="G2/M score", pch=16, cex = 0.8)
+dev.off()
+sce_A$phases <- assignments_A$phases
+table(sce_A$phases)
+#
+
+# pop4: L
+sce_L <- sce[, cell_index == 4]
+assignments_L <- cyclone(sce_L, mm.pairs, gene.names=rownames(sce_L))
+pdf("scplot/cell_cycle_L.pdf", width = 5, height = 5)
+par(mar=c(4,4,1,1))
+plot(assignments_L$score$G1, assignments_L$score$G2M, 
+     xlab="G1 score", ylab="G2/M score", pch=16, cex = 0.8)
+dev.off()
+sce_L$phases <- assignments_L$phases
+table(sce_L$phases)
+#
+
+# pop5: P
+sce_P <- sce[, cell_index == 5]
+assignments_P <- cyclone(sce_P, mm.pairs, gene.names=rownames(sce_P))
+pdf("scplot/cell_cycle_P.pdf", width = 5, height = 5)
+par(mar=c(4,4,1,1))
+plot(assignments_P$score$G1, assignments_P$score$G2M, 
+     xlab="G1 score", ylab="G2/M score", pch=16, cex = 0.8)
+dev.off()
+sce_P$phases <- assignments_P$phases
+table(sce_P$phases)
+#
 
 #########################################
 # Examining gene-level expression metrics
