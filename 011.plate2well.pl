@@ -25,6 +25,7 @@ my $cell_barcode_start = 0;
 my $cell_barcode_len = 7;
 my $rmt_start = 7;
 my $rmt_len = 8;
+my $rmt_len_use = 4;
 my $clean_start = 7;
 my $clean_len = 68;
 
@@ -63,7 +64,9 @@ sub sc_plate2well {
 			my $clean_seq = substr($fq1_2, $clean_start, $clean_len);
 			my $clean_qual = substr($fq1_4, $clean_start, $clean_len);
 			my $rmt_qual = substr($fq2_4, $rmt_start, $rmt_len);
-			print WELL "@" . "$rmt $rmt_qual\n$clean_seq\n+\n$clean_qual\n";
+			my $rmt_tag_seq = substr($rmt, 0, $rmt_len_use);
+			my $rmt_tag_qual = substr($rmt_qual, 0, $rmt_len_use);
+			print WELL "@" . "$rmt_tag_seq $rmt_tag_qual\n$clean_seq\n+\n$clean_qual\n";
 			close WELL;
 		}
 		close FQ1;
